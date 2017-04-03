@@ -88,8 +88,9 @@ public class CentralizedRun {
 		/* deploy components and ensembles */
 		final DEECoNode deecoNode = simulation.createNode(1);
 
-		deecoNode.deployComponent(new FireFighter());
-		deecoNode.deployComponent(new Environment());
+		
+		deecoNode.deployComponent(new FireFighter("FF1"));
+		deecoNode.deployComponent(new Environment("environment"));
 
 		Log.i("Simulation Starts");
 		simulation.start(SIMULATION_END);

@@ -1,5 +1,7 @@
 package combined;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Class representing coordinates in Corridor coordinate system.
  */
@@ -39,7 +41,7 @@ public class Location implements Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -69,7 +71,8 @@ public class Location implements Cloneable {
 		try {
 			return (Location) super.clone();
 		} catch (CloneNotSupportedException e) {
-			return null; //should never happen
+			//should never happen
+			throw new AssertionError("Cloneable could note be cloned", e);
 		}
 	}
 }

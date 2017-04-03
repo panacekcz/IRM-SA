@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.emf.common.util.EMap;
 
 import cz.cuni.mff.d3s.deeco.annotations.AssumptionParameter;
@@ -22,7 +24,7 @@ import cz.cuni.mff.d3s.irmsa.strategies.commons.InvariantInfo;
 public class AssumptionParameterAdaptationManagerDelegate implements EvolutionaryAdaptationManagerDelegate<AssumptionParameterBackup> {
 
 
-	public static PrintWriter assumptionWriter;
+	public static PrintWriter assumptionWriter = new PrintWriter(System.out);
 
 	@Override
 	public Set<InvariantInfo<?>> extractInvariants(
@@ -57,7 +59,8 @@ public class AssumptionParameterAdaptationManagerDelegate implements Evolutionar
 			final AssumptionInstance assumption = info.getInvariant();
 			final AssumptionParameter assumptionParameter = info.parameter.getAnnotation(AssumptionParameter.class);
 			final ReadOnlyKnowledgeManager knowledgeManager = assumption.getComponentInstance().getKnowledgeManager();
-			final EMap<String, Object> data = knowledgeManager.getComponent().getInternalData();
+			@SuppressWarnings("nullness:assignment.type.incompatible")
+			final EMap<String, @Nullable Object> data = knowledgeManager.getComponent().getInternalData();
 			final String paramId = info.getParameterId();
 			Object value = data.get(paramId);
 			if (value == null) {
@@ -72,8 +75,10 @@ public class AssumptionParameterAdaptationManagerDelegate implements Evolutionar
 			final AssumptionParameterBackup.Change change = new AssumptionParameterBackup.Change(paramId, info.delta, info.direction.opposite());
 			backup.parameters.put(knowledgeManager.getId(), change);
 
-			assumptionWriter.println(builder.toString());
-			assumptionWriter.flush();
+			if(assumptionWriter != null){
+				assumptionWriter.println(builder.toString());
+				assumptionWriter.flush();
+			}
 		}
 		return backup;
 	}
@@ -94,7 +99,7 @@ public class AssumptionParameterAdaptationManagerDelegate implements Evolutionar
 	 * @param delta value delta
 	 * @return computed value
 	 */
-	static private Number computeNewValue(final Object value,
+	static private @Nullable Number computeNewValue(final @Nullable Object value,
 			final Class<?> resultType, final Direction direction, final Number delta) {
 		if (value instanceof Number) {
 			Number number = (Number) value;
@@ -130,7 +135,8 @@ public class AssumptionParameterAdaptationManagerDelegate implements Evolutionar
 			final AssumptionInfo info = (AssumptionInfo) ii;
 			final AssumptionInstance assumption = info.getInvariant();
 			final ReadOnlyKnowledgeManager knowledgeManager = assumption.getComponentInstance().getKnowledgeManager();
-			final EMap<String, Object> data = knowledgeManager.getComponent().getInternalData();
+			@SuppressWarnings("nullness:assignment.type.incompatible")
+			final EMap<String, @Nullable Object> data = knowledgeManager.getComponent().getInternalData();
 			final String paramId = info.getParameterId();
 			final AssumptionParameterBackup.Change change = backup.parameters.get(paramId);
 			if (change == null) {

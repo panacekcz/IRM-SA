@@ -36,7 +36,7 @@ public class Dijkstra {
 		vertexQueue.add(source);
 
 		while (!vertexQueue.isEmpty()) {
-			Vertex<T> u = vertexQueue.poll();
+			Vertex<T> u = vertexQueue.remove();
 
 			// Visit each edge exiting u
 			for (Edge<T> e : u.adjacencies) {

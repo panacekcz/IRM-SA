@@ -3,6 +3,8 @@ package combined;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import dijkstra.Edge;
 import dijkstra.Vertex;
 
@@ -155,7 +157,7 @@ public class HeatMap {
 	/**
 	 * Class representing junction of corridors or end of corridor.
 	 */
-	static class Junction extends Vertex<Position> {
+	static class Junction extends Vertex<@NonNull Position> {
 
 		/**
 		 * Only constructor.
@@ -170,10 +172,10 @@ public class HeatMap {
 	/**
 	 * Class representing oriented corridor between junctions.
 	 */
-	static class Corridor extends Edge<Position> {
+	static final class Corridor extends Edge<@NonNull Position> {
 
 		/** Origin. */
-		final Vertex<Position> source;
+		final Vertex<@NonNull Position> source;
 
 		/** Corridor index in CORRIDORS. */
 		final int index;
@@ -198,6 +200,7 @@ public class HeatMap {
 		 * @param index corridor index in CORRIDORS
 		 * @param opposite opposite corridor index
 		 */
+		@SuppressWarnings("nullness:argument.type.incompatible")
 		public Corridor(final Vertex<Position> source, final Vertex<Position> target,
 				final double weight, final int index, final int opposite) {
 			super(target, weight);
@@ -241,7 +244,7 @@ public class HeatMap {
 			} else {
 				throw new IllegalArgumentException("Bad start/end pos!");
 			}
-			//
+			
 			source.adjacencies.add(this);
 		}
 
@@ -264,7 +267,7 @@ public class HeatMap {
 				case W:
 					return new Position(x - shift, y);
 				default:
-					return null;
+					throw new AssertionError("Invalid orientation value");
 			}
 		}
 	}

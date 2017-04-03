@@ -107,6 +107,10 @@ public class Environment {
 	/** Environment component id. Not used. */
 	public String id;
 
+	public Environment(String id){
+		this.id = id;
+	}
+	
 	@Process
 	@PeriodicScheduling(period=500)
 	static public void simulation(

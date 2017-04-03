@@ -5,6 +5,8 @@ import static cz.cuni.mff.d3s.irmsa.strategies.ComponentHelper.storeInInternalDa
 
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import cz.cuni.mff.d3s.deeco.annotations.Component;
 import cz.cuni.mff.d3s.deeco.annotations.In;
 import cz.cuni.mff.d3s.deeco.annotations.InOut;
@@ -40,7 +42,7 @@ public class MetaAdaptationManager {
 	static public void adapt(@In("id") String id,
 			@InOut("alreadyStarted") ParamHolder<Boolean> alreadyStarted) {
 		final Boolean run = retrieveFromInternalData(RUN_FLAG, Boolean.FALSE);
-		final List<AdaptationManager> managers = retrieveFromInternalData(MANAGED_MANAGERS);
+		final @NonNull List<AdaptationManager> managers = retrieveFromInternalData(MANAGED_MANAGERS);
 		if (!run) {
 			for (AdaptationManager manager : managers) {
 				manager.stop();

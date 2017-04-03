@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.checkerframework.checker.initialization.qual.UnderInitialization;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.emf.common.util.EMap;
 
 import cz.cuni.mff.d3s.deeco.annotations.Component;
@@ -99,7 +102,7 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 	public Double fitness = 0.0;
 
 	/** Deeco component instance representing this manager. */
-	private ComponentInstance deecoComponent;
+	private @Nullable ComponentInstance deecoComponent;
 
 	/**
 	 * Only constructor.
@@ -124,12 +127,16 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 
 	@Override
 	public void stop() {
+		if(deecoComponent == null)
+			throw new IllegalStateException("deecoComponent was not set");
 		final EMap<String, Object> data = deecoComponent.getInternalData();
 		data.put(EvolutionaryAdaptationManager.RUN_FLAG, false);
 	}
 
 	@Override
 	public void run() {
+		if(deecoComponent == null)
+			throw new IllegalStateException("deecoComponent was not set");
 		final EMap<String, Object> data = deecoComponent.getInternalData();
 		data.put(EvolutionaryAdaptationManager.RUN_FLAG, true);
 		data.put(EvolutionaryAdaptationManager.DONE_FLAG, false);
@@ -137,6 +144,8 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 
 	@Override
 	public boolean isDone() {
+		if(deecoComponent == null)
+			throw new IllegalStateException("deecoComponent was not set");
 		final EMap<String, Object> data = deecoComponent.getInternalData();
 		final Boolean result = (Boolean) data.get(EvolutionaryAdaptationManager.DONE_FLAG);
 		return result == null || result;
@@ -146,7 +155,7 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 	 * Creates id. Called in constructor!
 	 * @return new id
 	 */
-	protected String createId() {
+	protected String createId(@UnderInitialization EvolutionaryAdaptationManager this) {
 		return String.format("EvolutionaryAdapatationManager_%s", UUID.randomUUID());
 	}
 
@@ -157,7 +166,10 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 			@Out("fitness") ParamHolder<Double> fitness) {
 		final ComponentProcess process = ProcessContext.getCurrentProcess();
 		final EvolutionaryAdaptationManagerDelegate<T> delegate = retrieveFromInternalData(ADAPTATION_DELEGATE);
-		getTimeTrigger(process).setPeriod(delegate.getMonitorPeriod()); //set monitor period
+		final TimeTrigger trigger = getTimeTrigger(process);
+		if(trigger != null){
+			trigger.setPeriod(delegate.getMonitorPeriod()); //set monitor period
+		}
 		//
 		final boolean run =  retrieveFromInternalData(RUN_FLAG, false);
 		final boolean done =  retrieveFromInternalData(DONE_FLAG, false);
@@ -178,9 +190,9 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 
 		// get architecture, design, trace models and plug-ins from the process context
 		final Architecture architecture = ProcessContext.getArchitecture();
-		final IRM design = retrieveFromInternalData(DESIGN_MODEL);
-		final TraceModel trace = retrieveFromInternalData(TRACE_MODEL);
-		final InvariantFitnessCombiner invariantFitnessCombiner =
+		final @NonNull IRM design = retrieveFromInternalData(DESIGN_MODEL);
+		final @NonNull TraceModel trace = retrieveFromInternalData(TRACE_MODEL);
+		final @NonNull InvariantFitnessCombiner invariantFitnessCombiner =
 				retrieveFromInternalData(INVARIANT_FITNESS_COMBINER);
 
 		// generate the IRM runtime model instances
@@ -234,13 +246,13 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 		}
 
 		// get variations from the process context
-		final InvariantFitnessCombiner invariantFitnessCombiner =
+		final @NonNull InvariantFitnessCombiner invariantFitnessCombiner =
 				retrieveFromInternalData(INVARIANT_FITNESS_COMBINER);
-		final AdapteeSelector adapteeSelector =
+		final @NonNull AdapteeSelector adapteeSelector =
 				retrieveFromInternalData(ADAPTEE_SELECTOR);
-		final DirectionSelector directionSelector =
+		final @NonNull DirectionSelector directionSelector =
 				retrieveFromInternalData(DIRECTION_SELECTOR);
-		final DeltaComputor deltaComputor =
+		final @NonNull DeltaComputor deltaComputor =
 				retrieveFromInternalData(DELTA_COMPUTOR);
 
 		//retrieve invariant infos from last monitor run
@@ -284,8 +296,10 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 			state.state = State.OBSERVED;
 			//change period of this process
 			final TimeTrigger trigger = getTimeTrigger(process);
-			if (observeTime > trigger.getPeriod()) { //changing period takes effect only the run after the next one
-				trigger.setPeriod(observeTime - trigger.getPeriod());
+			if(trigger != null){
+				if (observeTime > trigger.getPeriod()) { //changing period takes effect only the run after the next one
+					trigger.setPeriod(observeTime - trigger.getPeriod());
+				}
 			}
 			state.observeTime = simulatedTime + observeTime;
 			System.out.println("!!!ADAPTING!!!");
@@ -329,7 +343,9 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 
 			//{Mark non-prospective specimen as dead end or utilize Simulated annealing}
 			final TimeTrigger trigger = getTimeTrigger(process);
-			trigger.setPeriod(delegate.getDefaultAdaptingPeriod());
+			if(trigger != null){
+				trigger.setPeriod(delegate.getDefaultAdaptingPeriod());
+			}
 			state.reset();
 		} else {
 			Log.w("Unknown state " + state.state);
@@ -341,7 +357,7 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 	 * @param process given process
 	 * @return time trigger of the given process or null
 	 */
-	static protected TimeTrigger getTimeTrigger(final ComponentProcess process) {
+	static protected @Nullable TimeTrigger getTimeTrigger(final ComponentProcess process) {
 		for (Trigger trigger : process.getTriggers()) {
 			if (trigger instanceof TimeTrigger) {
 				return (TimeTrigger) trigger;
@@ -371,7 +387,9 @@ public abstract class EvolutionaryAdaptationManager implements AdaptationManager
 			final EvolutionaryAdaptationManagerDelegate<? extends Backup> delegate,
 			final StateHolder<?> state) {
 		final TimeTrigger trigger = getTimeTrigger(process);
-		trigger.setPeriod(delegate.getDefaultAdaptingPeriod());
+		if(trigger != null){
+			trigger.setPeriod(delegate.getDefaultAdaptingPeriod());
+		}
 		state.reset();
 	}
 }

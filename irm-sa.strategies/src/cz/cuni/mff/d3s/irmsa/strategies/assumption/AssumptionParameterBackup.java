@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+
 import cz.cuni.mff.d3s.irm.model.design.impl.KnowledgeImpl;
 import cz.cuni.mff.d3s.irmsa.strategies.commons.Backup;
 import cz.cuni.mff.d3s.irmsa.strategies.commons.Direction;
@@ -16,12 +18,12 @@ public class AssumptionParameterBackup extends Backup {
 	public Map<String, Change> parameters = new HashMap<>();
 
 	@Override
-	protected String createBackupName() {
+	protected String createBackupName(@UnknownInitialization AssumptionParameterBackup this) {
 		return "AssumptionParameterBackup";
 	}
 
 	@Override
-	protected String createBackupType() {
+	protected String createBackupType(@UnknownInitialization AssumptionParameterBackup this) {
 		return "AssumptionParameterBackupType";
 	}
 

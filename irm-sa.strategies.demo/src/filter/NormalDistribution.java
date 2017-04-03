@@ -2,6 +2,10 @@ package filter;
 
 import java.util.Random;
 
+import org.checkerframework.checker.initialization.qual.UnderInitialization;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+
 /**
  * A generator of random numbers with normal distribution.
  * Mean and standard deviation can be specified. The seed
@@ -59,7 +63,8 @@ public class NormalDistribution {
 	 * @param mean The mean of the normal distribution.
 	 * @param deviation The standard deviation of the normal distribution.
 	 */
-	private void init(double mean, double deviation) {
+	@EnsuresNonNull({"rand"})
+	private void init(@UnderInitialization NormalDistribution this, double mean, double deviation) {
 		setDistribution(mean, deviation);
 		
 		rand = new Random(seed);
@@ -72,7 +77,7 @@ public class NormalDistribution {
 	 * @param mean The mean of the normal distribution.
 	 * @param deviation The standard deviation of the normal distribution.
 	 */
-	public void setDistribution(double mean, double deviation) {
+	public void setDistribution(@UnknownInitialization NormalDistribution this, double mean, double deviation) {
 		this.mean = mean;
 		this.deviation = deviation;
 	}

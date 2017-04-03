@@ -40,7 +40,7 @@ public class Position implements Serializable, Cloneable {
 		try {
 			return (Position) super.clone();
 		} catch (CloneNotSupportedException e) {
-			return null; //should never happen
+			throw new AssertionError("Cloneable could not be cloned", e);
 		}
 	}
 }

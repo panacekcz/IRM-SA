@@ -103,7 +103,9 @@ public class FireFighter {
 		@InOut("position") ParamHolder<MetadataWrapper<PositionKnowledge>> position
 	) {
 		if(id.equals(Environment.FF_LEADER_ID)){
-			Environment.positionWriter.println(currentTime());
+			if(Environment.positionWriter != null){
+				Environment.positionWriter.println(currentTime());
+			}
 		}
 		
 		final double inacc = computeCurrentInaccuracy(position.value);

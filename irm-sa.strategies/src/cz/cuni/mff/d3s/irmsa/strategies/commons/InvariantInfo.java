@@ -15,6 +15,9 @@
  ******************************************************************************/
 package cz.cuni.mff.d3s.irmsa.strategies.commons;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import cz.cuni.mff.d3s.irm.model.runtime.api.ExchangeInvariantInstance;
 import cz.cuni.mff.d3s.irm.model.runtime.api.InvariantInstance;
 import cz.cuni.mff.d3s.irm.model.runtime.api.ProcessInvariantInstance;
@@ -63,10 +66,10 @@ public class InvariantInfo<T extends InvariantInstance> {
 	public int level = Integer.MIN_VALUE;
 
 	/** Direction of the adaptation. */
-	public Direction direction;
+	public @NonNull Direction direction;
 
 	/** Change to the invariant. Should be always non-negative. */
-	public Number delta;
+	public @NonNull Number delta;
 
 	/**
 	 * Only and private constructor.
@@ -76,6 +79,8 @@ public class InvariantInfo<T extends InvariantInstance> {
 	protected InvariantInfo(final T invariant, final Class<T> clazz) {
 		this.invariant = invariant;
 		this.clazz = clazz;
+		this.direction = Direction.NO;
+		this.delta = 0;
 	}
 
 	/**

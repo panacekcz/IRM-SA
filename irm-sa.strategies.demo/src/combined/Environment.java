@@ -16,6 +16,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+
 import combined.HeatMap.Corridor;
 
 import cz.cuni.mff.d3s.deeco.annotations.Component;
@@ -41,7 +44,7 @@ import filter.PositionNoise;
 public class Environment {
 
 	@Local
-	public static PrintWriter positionWriter;
+	public static @MonotonicNonNull PrintWriter positionWriter;
 
 
 	/** Firefighter leading the group. */
@@ -186,6 +189,7 @@ public class Environment {
 	/////////////////////
 
 	/** Firefighters state. */
+	@SuppressWarnings({"assignment.type.incompatible", "argument.type.incompatible"})
 	static private Map<String, FireFighterState> firefighters =
 			INITIAL_LOCATIONS.keySet().stream().collect(Collectors.toMap(Function.identity(), id -> {
 				return new FireFighterState(id);
@@ -216,17 +220,24 @@ public class Environment {
 		return ff;
 	}
 
-	static public Double getInitialBattery(final String id) {
+	static public Double getInitialBattery(final String  id) {
+		if(!batteryNoise.containsKey(id))
+			throw new IllegalArgumentException("invalid firefighter id");
 		return batteryNoise.get(id).apply(INITIAL_BATTERY_LEVEL);
 	}
 
 	static public PositionKnowledge getInitialPosition(final String id) {
+		if(!positionNoise.containsKey(id))
+			throw new IllegalArgumentException("invalid firefighter id");
+		
 		final PositionKnowledge pos = INITIAL_POSITIONS.get(id);
 		final Position noised = positionNoise.get(id).apply(pos != null ? pos : DEFAULT_POSITION);
 		return new PositionKnowledge(noised, GPS_INACCURACY);
 	}
 
 	static public Double getInitialTemperature(final String id) {
+		if(!temperatureNoise.containsKey(id))
+			throw new IllegalArgumentException("invalid firefighter id");
 		final Double temp = INITIAL_TEMPERATURES.get(id);
 		return temperatureNoise.get(id).apply(temp != null ? temp : DEFAULT_TEMPERATURE);
 	}
@@ -248,6 +259,9 @@ public class Environment {
 	 * @return position of given firefighter or NaN with insufficient energy
 	 */
 	static public PositionKnowledge getPosition(final String ffId) {
+		if(!brokenGPSInaccuracy.containsKey(ffId))
+			throw new IllegalArgumentException("invalid firefighter id");
+		
 		final FireFighterState ff = getFirefighter(ffId);
 		ff.batteryLevel -= GPS_ENERGY_COST;
 		if (ff.batteryLevel <= 0.0) {
@@ -259,6 +273,8 @@ public class Environment {
 				final Position position = brokenGPSInaccuracy.get(ffId).apply(ff.location.toPosition());
 				return new PositionKnowledge(position, BROKEN_GSP_INACURRACY);
 			} else {
+				// positionNoise has the same keys as brokenGPSInaccuracy
+				assert positionNoise.containsKey(ffId) : "@AssumeAssertion(keyfor)";
 				final Position position = positionNoise.get(ffId).apply(ff.location.toPosition());
 				return new PositionKnowledge(position, GPS_INACCURACY);
 			}
@@ -280,7 +296,10 @@ public class Environment {
 	 * @return battery level of given firefighter
 	 */
 	static public double getBatteryLevel(final String ffId) {
+		if(!batteryNoise.containsKey(ffId))
+			throw new IllegalArgumentException("invalid firefighter id");
 		return batteryNoise.get(ffId).apply(getFirefighter(ffId).batteryLevel);
+		
 	}
 
 	/**
@@ -301,6 +320,9 @@ public class Environment {
 	 */
 	static public double getTemperature(final String ffId,
 			final MetadataWrapper<Double> temperature) {
+		if(!temperatureNoise.containsKey(ffId))
+			throw new IllegalArgumentException("invalid firefighter id");
+		
 		if (ffId.equals(FF_LEADER_ID)
 				&& ProcessContext.getTimeProvider().getCurrentMilliseconds() >= THERMO_DEAD_TIME) {
 			temperature.malfunction();
@@ -310,12 +332,16 @@ public class Environment {
 
 	/** Environment component id. Not used, but mandatory. */
 	public String id;
+	
+	public Environment(String id){
+		this.id = id;
+	}
 
 	/**
 	 * Prepares firefighter's plan how to get to its target.
 	 * @param ff firefighter which needs new plan
 	 */
-	static private void preparePlan(final FireFighterState ff) {
+	static private void preparePlan(final @UnknownInitialization(FireFighterState.class) FireFighterState ff) {
 		ff.plan.clear(); //discard previous plan
 		final Corridor startCorr = CORRIDORS.get(ff.location.corridor);
 		final Corridor targetCorr = CORRIDORS.get(ff.target.corridor);
@@ -534,6 +560,9 @@ public class Environment {
 		 * @param ffId firefighter id
 		 */
 		public FireFighterState(final String ffId) {
+			if(!INITIAL_LOCATIONS.containsKey(ffId))
+				throw new IllegalArgumentException("invalid firefighter id");
+			
 			location = INITIAL_LOCATIONS.get(ffId).clone();
 			preparePlan(this);
 		}

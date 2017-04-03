@@ -1,5 +1,6 @@
 package cz.cuni.mff.d3s.irmsa.strategies.assumption;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.eclipse.emf.common.util.EMap;
 
 import cz.cuni.mff.d3s.deeco.model.runtime.api.RuntimeMetadata;
@@ -45,27 +46,27 @@ public class AssumptionParameterAdaptationPlugin extends EvolutionaryAdaptationP
 	}
 
 	@Override
-	protected InvariantFitnessCombiner createDefaultInvariantFitnessCombiner() {
+	protected InvariantFitnessCombiner createDefaultInvariantFitnessCombiner(@UnknownInitialization AssumptionParameterAdaptationPlugin this) {
 		return new InvariantFitnessCombinerAverage();
 	}
 
 	@Override
-	protected AdapteeSelector createDefaultAdapteeSelector() {
+	protected AdapteeSelector createDefaultAdapteeSelector(@UnknownInitialization AssumptionParameterAdaptationPlugin this) {
 		return new AdapteeSelectorFitness();
 	}
 
 	@Override
-	protected DirectionSelector createDefaultDirectionSelector() {
+	protected DirectionSelector createDefaultDirectionSelector(@UnknownInitialization AssumptionParameterAdaptationPlugin this) {
 		return new DirectionSelectorImpl();
 	}
 
 	@Override
-	protected DeltaComputor createDefaultDeltaComputor() {
+	protected DeltaComputor createDefaultDeltaComputor(@UnknownInitialization AssumptionParameterAdaptationPlugin this) {
 		return new DeltaComputorFixed();
 	}
 
 	@Override
-	protected EvolutionaryAdaptationManager createAdaptationManager() {
+	protected EvolutionaryAdaptationManager createAdaptationManager(@UnknownInitialization AssumptionParameterAdaptationPlugin this) {
 		return new AssumptionParameterAdaptationManager(maximumTries);
 	}
 

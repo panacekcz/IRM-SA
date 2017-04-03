@@ -243,7 +243,8 @@ public class FireFighter {
 	/**
 	 * Only constructor.
 	 */
-	public FireFighter() {
+	public FireFighter(String id) {
+		this.id = id;
 		batteryLevel = Environment.INITIAL_BATTERY_LEVEL;
 		position = Environment.INITIAL_POSITION;
 	}

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.checkerframework.checker.initialization.qual.UnderInitialization;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.eclipse.emf.common.util.EMap;
 
 import cz.cuni.mff.d3s.deeco.annotations.processor.AnnotationProcessorException;
@@ -15,6 +17,7 @@ import cz.cuni.mff.d3s.deeco.runtime.DEECoPlugin;
 import cz.cuni.mff.d3s.irm.model.design.IRM;
 import cz.cuni.mff.d3s.irm.model.trace.api.TraceModel;
 import cz.cuni.mff.d3s.irmsa.strategies.MetaAdaptationPlugin;
+import cz.cuni.mff.d3s.irmsa.strategies.assumption.AssumptionParameterStateHolder;
 import cz.cuni.mff.d3s.irmsa.strategies.commons.variations.AdapteeSelector;
 import cz.cuni.mff.d3s.irmsa.strategies.commons.variations.DeltaComputor;
 import cz.cuni.mff.d3s.irmsa.strategies.commons.variations.DirectionSelector;
@@ -151,31 +154,31 @@ public abstract class EvolutionaryAdaptationPlugin <T extends EvolutionaryAdapta
 	 * Creates default InvariantFitnessCombiner. Called in constructor!
 	 * @return default InvariantFitnessCombiner
 	 */
-	protected abstract InvariantFitnessCombiner createDefaultInvariantFitnessCombiner();
+	protected abstract InvariantFitnessCombiner createDefaultInvariantFitnessCombiner(@UnknownInitialization EvolutionaryAdaptationPlugin<T,U> this);
 
 	/**
 	 * Creates default AdapteeSelector. Called in constructor!
 	 * @return default AdapteeSelector
 	 */
-	protected abstract AdapteeSelector createDefaultAdapteeSelector();
+	protected abstract AdapteeSelector createDefaultAdapteeSelector(@UnknownInitialization EvolutionaryAdaptationPlugin<T,U> this);
 
 	/**
 	 * Creates default DirectionSelector. Called in constructor!
 	 * @return default DirectionSelector
 	 */
-	protected abstract DirectionSelector createDefaultDirectionSelector();
+	protected abstract DirectionSelector createDefaultDirectionSelector(@UnknownInitialization EvolutionaryAdaptationPlugin<T,U> this);
 
 	/**
 	 * Creates default DeltaComputor. Called in constructor!
 	 * @return default DeltaComputor
 	 */
-	protected abstract DeltaComputor createDefaultDeltaComputor();
+	protected abstract DeltaComputor createDefaultDeltaComputor(@UnknownInitialization EvolutionaryAdaptationPlugin<T,U> this);
 
 	/**
 	 * Creates new AdaptationManager. Unique class for each Plugin!
 	 * @return new AdaptationManager
 	 */
-	protected abstract EvolutionaryAdaptationManager createAdaptationManager();
+	protected abstract EvolutionaryAdaptationManager createAdaptationManager(@UnknownInitialization EvolutionaryAdaptationPlugin<T,U> this);
 
 	/**
 	 * Here can descendant provide additional data to adaptation manager.

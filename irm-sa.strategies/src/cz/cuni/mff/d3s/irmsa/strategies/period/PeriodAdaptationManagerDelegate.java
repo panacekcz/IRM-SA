@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import cz.cuni.mff.d3s.deeco.model.runtime.api.ComponentInstance;
 import cz.cuni.mff.d3s.deeco.model.runtime.api.EnsembleDefinition;
 import cz.cuni.mff.d3s.deeco.model.runtime.api.TimeTrigger;
@@ -21,7 +23,7 @@ import cz.cuni.mff.d3s.irmsa.strategies.commons.InvariantInfo;
 
 public class PeriodAdaptationManagerDelegate implements EvolutionaryAdaptationManagerDelegate<PeriodBackup> {
 
-	public static PrintWriter periodWriter;
+	public static PrintWriter periodWriter = new PrintWriter(System.out);
 
 	@Override
 	public Set<InvariantInfo<?>> extractInvariants(
@@ -57,7 +59,7 @@ public class PeriodAdaptationManagerDelegate implements EvolutionaryAdaptationMa
 	 * @param info invariant info
 	 * @return TimeTrigger for invariant or null
 	 */
-	static private TimeTrigger getTimeTrigger(InvariantInfo<?> info) {
+	static private @Nullable TimeTrigger getTimeTrigger(InvariantInfo<?> info) {
 		List<Trigger> triggers;
 		if (ProcessInvariantInstance.class.isAssignableFrom(info.clazz)) {
 			final ProcessInvariantInstance pii = info.getInvariant();
@@ -124,12 +126,16 @@ public class PeriodAdaptationManagerDelegate implements EvolutionaryAdaptationMa
 			StringBuilder builder = new StringBuilder();
 			builder.append(ProcessContext.getTimeProvider().getCurrentMilliseconds()).append(';');
 			builder.append(currentPeriod).append(';');
-			trigger.setPeriod(newPeriod);
+			if(trigger != null){
+				trigger.setPeriod(newPeriod);
+			}
 			builder.append(newPeriod);
 
+			
 			periodWriter.println(builder.toString());
 			periodWriter.flush();
-
+		
+			
 			if (ProcessInvariantInstance.class.isAssignableFrom(info.clazz)) {
 				final ProcessInvariantInstance pii = info.getInvariant();
 				final String id = getProcessInvariantInstanceId(pii);

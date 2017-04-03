@@ -5,6 +5,9 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import cz.cuni.mff.d3s.deeco.annotations.Component;
 import cz.cuni.mff.d3s.deeco.annotations.Local;
 import cz.cuni.mff.d3s.deeco.annotations.PeriodicScheduling;
@@ -36,10 +39,10 @@ public class EvaluationComponent {
 	private static final String TEMPERATURE_LABEL = "temperature";
 	
 	@Local
-	private static PrintWriter writer;
+	private static @Nullable PrintWriter writer;
 	
 	@Local
-	private static KnowledgeManager componentsKnowledge;
+	private static @MonotonicNonNull KnowledgeManager componentsKnowledge;
 
 	/** Mandatory id field. */
 	public String id;
@@ -55,8 +58,7 @@ public class EvaluationComponent {
 			final String suffix = Run.enableMetaAdaptation
 					? "Adapt"
 					: "NoAdapt";
-			writer = new PrintWriter(String.format("EvaluationData%s.csv", suffix), "UTF-8");
-
+			
 			StringBuilder builder = new StringBuilder();
 			builder.append("time").append(DELIMITER);
 			builder.append("actual_temperature").append(DELIMITER);
@@ -67,6 +69,8 @@ public class EvaluationComponent {
 			builder.append("belief_position_x").append(DELIMITER);
 			builder.append("belief_position_y").append(DELIMITER);
 			builder.append("position_distance").append("\n");
+			
+			writer = new PrintWriter(String.format("EvaluationData%s.csv", suffix), "UTF-8");
 			writer.write(builder.toString());
 
 		} catch (IOException e) {
@@ -100,6 +104,7 @@ public class EvaluationComponent {
 						KnowledgePathHelper.createKnowledgePath(POSITION_LABEL, PathOrigin.COMPONENT);
 				knowledgePaths.add(componentPosPath);
 				
+				assert componentsKnowledge != null : "@AssumeAssertion(nullness)";
 				final ValueSet knowledgeValues = componentsKnowledge.get(knowledgePaths);
 	
 				final String componentId = (String) knowledgeValues.getValue(componentIdPath);
@@ -143,7 +148,8 @@ public class EvaluationComponent {
 				builder.append(beliefPosition.y).append(DELIMITER);
 				// position distance
 				builder.append(positionDistance).append("\n");
-	
+				
+				assert writer != null : "@AssumeAssertion(nullness)";
 				writer.write(builder.toString());
 
 			} catch (ParseException | AnnotationProcessorException | KnowledgeNotFoundException e) {

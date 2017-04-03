@@ -28,6 +28,7 @@ import cz.cuni.mff.d3s.deeco.model.runtime.custom.RuntimeMetadataFactoryExt;
 import cz.cuni.mff.d3s.deeco.runners.DEECoSimulation;
 import cz.cuni.mff.d3s.deeco.runtime.DEECoException;
 import cz.cuni.mff.d3s.deeco.runtime.DEECoNode;
+import cz.cuni.mff.d3s.deeco.task.KnowledgePathHelper;
 import cz.cuni.mff.d3s.deeco.timer.DiscreteEventTimer;
 import cz.cuni.mff.d3s.deeco.timer.SimulationTimer;
 import cz.cuni.mff.d3s.irm.model.design.IRM;
@@ -160,7 +161,7 @@ public class Run {
 		}
 		//deploy components
 		ComponentInstance ff1ComponentInstance = deeco3.deployComponent(new FireFighter(Environment.FF_LEADER_ID));
-		deeco3.deployComponent(new Environment());
+		deeco3.deployComponent(new Environment("envrironment"));
 		deeco3.deployEnsemble(FireFighterDataAggregation.class);
 		deeco3.deployComponent(new EvaluationComponent("eval"));
 
@@ -181,9 +182,11 @@ public class Run {
 		simulation.start(SIMULATION_END);
 		// Close the file writer
 		EvaluationComponent.finit();
+		assert(Environment.positionWriter != null) : "@AssumeAssertion(nullness)";
 		Environment.positionWriter.close();
 		AssumptionParameterAdaptationManagerDelegate.assumptionWriter.close();
 		PeriodAdaptationManagerDelegate.periodWriter.close();
+		assert(filter.Filter.filterWriter != null) : "@AssumeAssertion(nullness)";
 		filter.Filter.filterWriter.close();
 		Log.i("Simulation Finished");
 	}

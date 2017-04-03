@@ -48,7 +48,8 @@ public class PositionNoise extends Filter<Position> {
 		// vertical noise
 		double v = noise.getNext();
 
-		filterWriter.println(String.format("%s\t%.3f\t%.3f", name, h, v));
+		if(filterWriter != null)
+			filterWriter.println(String.format("%s\t%.3f\t%.3f", name, h, v));
 		
 		return new Position(data.x + h, data.y + v);
 	}

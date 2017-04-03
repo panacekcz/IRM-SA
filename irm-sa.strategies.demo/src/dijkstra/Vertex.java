@@ -3,6 +3,8 @@ package dijkstra;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Class representing vertex in a graph.
  */
@@ -18,10 +20,10 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
 	public double minDistance = Double.POSITIVE_INFINITY;
 
 	/** Seems it needs to be reset after each run! */
-	public Vertex<T> previous;
+	public @Nullable Vertex<T> previous;
 
 	/** Seems it needs to be reset after each run! */
-	public Edge<T> previousEdge;
+	public @Nullable Edge<T> previousEdge;
 
 	/**
 	 * Only constructor.
@@ -42,7 +44,7 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
 	}
 
 	@Override
-	public boolean equals(final Object other) {
+	public boolean equals(final @Nullable Object other) {
 		if (!(other instanceof Vertex)) {
 			return false;
 		}

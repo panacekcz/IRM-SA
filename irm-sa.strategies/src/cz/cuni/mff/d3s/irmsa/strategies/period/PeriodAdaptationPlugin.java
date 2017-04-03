@@ -1,5 +1,6 @@
 package cz.cuni.mff.d3s.irmsa.strategies.period;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.eclipse.emf.common.util.EMap;
 
 import cz.cuni.mff.d3s.deeco.model.runtime.api.RuntimeMetadata;
@@ -51,27 +52,27 @@ public class PeriodAdaptationPlugin extends EvolutionaryAdaptationPlugin<PeriodA
 	}
 
 	@Override
-	protected InvariantFitnessCombiner createDefaultInvariantFitnessCombiner() {
+	protected InvariantFitnessCombiner createDefaultInvariantFitnessCombiner(@UnknownInitialization PeriodAdaptationPlugin this) {
 		return new InvariantFitnessCombinerAverage();
 	}
 
 	@Override
-	protected AdapteeSelector createDefaultAdapteeSelector() {
+	protected AdapteeSelector createDefaultAdapteeSelector(@UnknownInitialization PeriodAdaptationPlugin this) {
 		return new AdapteeSelectorFitness();
 	}
 
 	@Override
-	protected DirectionSelector createDefaultDirectionSelector() {
+	protected DirectionSelector createDefaultDirectionSelector(@UnknownInitialization PeriodAdaptationPlugin this) {
 		return new DirectionSelectorImpl();
 	}
 
 	@Override
-	protected DeltaComputor createDefaultDeltaComputor() {
+	protected DeltaComputor createDefaultDeltaComputor(@UnknownInitialization PeriodAdaptationPlugin this) {
 		return new DeltaComputorFixed();
 	}
 
 	@Override
-	protected EvolutionaryAdaptationManager createAdaptationManager() {
+	protected EvolutionaryAdaptationManager createAdaptationManager(@UnknownInitialization PeriodAdaptationPlugin this) {
 		return new PeriodAdaptationManager(maximumTries);
 	}
 

@@ -50,7 +50,8 @@ public class DoubleNoise extends Filter<Double> {
 	@Override
 	protected Double applyNoise(final Double data) {
 		double r = noise.getNext();
-		filterWriter.println(String.format("%s\t%.3f", name, r));
+		if(filterWriter != null)
+			filterWriter.println(String.format("%s\t%.3f", name, r));
 		return (data + r);
 	}
 }

@@ -2,6 +2,8 @@ package cz.cuni.mff.d3s.irmsa.strategies.commons;
 
 import java.io.Serializable;
 
+import org.checkerframework.checker.initialization.qual.UnderInitialization;
+
 import cz.cuni.mff.d3s.irm.model.design.impl.KnowledgeImpl;
 
 /**
@@ -23,11 +25,11 @@ public abstract class Backup extends KnowledgeImpl implements Serializable {
 	 * Returns name of the backup. Called in constructor!
 	 * @return name of the backup
 	 */
-	protected abstract String createBackupName();
+	protected abstract String createBackupName(@UnderInitialization Backup this);
 
 	/**
 	 * Returns name of the backup. Called in constructor!
 	 * @return name of the backup
 	 */
-	protected abstract String createBackupType();
+	protected abstract String createBackupType(@UnderInitialization Backup this);
 }

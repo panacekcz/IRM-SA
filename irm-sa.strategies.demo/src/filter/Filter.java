@@ -2,6 +2,8 @@ package filter;
 
 import java.io.PrintWriter;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * A filter for applying noise and inaccuracy to a data.
  * Filter is bound to a certain data type is it meant to
@@ -14,12 +16,12 @@ import java.io.PrintWriter;
  */
 public abstract class Filter<T> {
 
-	public static PrintWriter filterWriter;
+	public static @Nullable PrintWriter filterWriter;
 	
 	/**
 	 * Inner filter is dedicated for filter chaining.
 	 */
-	protected Filter<T> innerFilter;
+	protected @Nullable Filter<T> innerFilter;
 	
 	final String name;
 	
